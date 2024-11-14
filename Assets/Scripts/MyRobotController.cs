@@ -45,7 +45,10 @@ public class MyRobotController : MonoBehaviour
         InitializeLineRenderer(lineRenderer1);
         InitializeLineRenderer(lineRenderer2);
         InitializeLineRenderer(lineRenderer3);
-    }
+
+        angle1_x = 0f;
+        angle1_y = 0f;
+}
 
     void InitializeLineRenderer(LineRenderer lineRenderer)
     {
@@ -57,7 +60,7 @@ public class MyRobotController : MonoBehaviour
         lineRenderer.startColor = Color.white;
         lineRenderer.endColor = Color.grey;
 
-
+     
     }
 
     void Update()
