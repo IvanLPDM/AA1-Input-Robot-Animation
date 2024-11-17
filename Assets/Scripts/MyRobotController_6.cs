@@ -17,6 +17,12 @@ public class MyRobotController_6 : MonoBehaviour
     public Transform Joint6;
     public Transform endFactor;
 
+    public Transform pinza1;
+    public Transform pinza2;
+
+    public Transform pinzaClose1;
+    public Transform pinzaClose2;
+
     public Transform Stud_target;
     public Transform Workbench_destination;
 
@@ -73,6 +79,7 @@ public class MyRobotController_6 : MonoBehaviour
     public float rotationSpeed = 50f;
 
     private bool picked_Target = false;
+    private bool closePinzas = false;
 
 
     // Start is called before the first frame update
@@ -95,6 +102,9 @@ public class MyRobotController_6 : MonoBehaviour
         InitializeLineRenderer(lineRenderer7);
 
         IniciarAngulos();
+
+        pinzaClose1.gameObject.SetActive(false);
+        pinzaClose2.gameObject.SetActive(false);
     }
 
     void IniciarAngulos()
@@ -138,11 +148,16 @@ public class MyRobotController_6 : MonoBehaviour
         InputHope();
         UpdateVisualLinks();
 
-
-        if(picked_Target)
+        if(closePinzas)
         {
-            catchTarget(); 
+            dropTarget();
+            
         }
+        else
+        {
+            catchTarget();
+        }
+       
     }
 
     void InputHope()
@@ -156,7 +171,11 @@ public class MyRobotController_6 : MonoBehaviour
         if (Input.GetKey(KeyCode.D)) angle4_z -= rotationSpeed * Time.deltaTime;
         if (Input.GetKey(KeyCode.R)) angle5_z += rotationSpeed * Time.deltaTime; 
         if (Input.GetKey(KeyCode.F)) angle5_z -= rotationSpeed * Time.deltaTime;
-        if (Input.GetKey(KeyCode.Space)) picked_Target = true;
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            closePinzas = !closePinzas;
+            picked_Target = true;
+        }
 
         // Aplicar los límites
         //angle0_y = Mathf.Clamp(angle0_y, minAngle_Q, MaxAngle_A);
@@ -212,14 +231,11 @@ public class MyRobotController_6 : MonoBehaviour
 
     float CalculateAngleBetweenPoints(Vector3 pointA, Vector3 pointB)
     {
-        // Diferencia en X y Y
         float deltaX = pointB.x - pointA.x;
         float deltaY = pointB.y - pointA.y;
 
-        // Calcula el ángulo en radianes y conviértelo a grados
         float angle = Mathf.Atan2(deltaY, deltaX) * Mathf.Rad2Deg;
 
-        // Devuelve el ángulo
         return angle;
     }
 
@@ -255,6 +271,21 @@ public class MyRobotController_6 : MonoBehaviour
 
     void catchTarget()
     {
-        Stud_target.position = endFactor.position;
+        pinza1.gameObject.SetActive(false);
+        pinza2.gameObject.SetActive(false);
+
+        pinzaClose1.gameObject.SetActive(true);
+        pinzaClose2.gameObject.SetActive(true);
+
+        //Stud_target.position = endFactor.position;
+    }
+
+    void dropTarget()
+    {
+        pinza1.gameObject.SetActive(true);
+        pinza2.gameObject.SetActive(true);
+
+        pinzaClose1.gameObject.SetActive(false);
+        pinzaClose2.gameObject.SetActive(false);
     }
 }
