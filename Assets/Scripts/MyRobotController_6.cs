@@ -82,7 +82,8 @@ public class MyRobotController_6 : MonoBehaviour
     public float MinAngle_R;
     public float MaxAngle_F;
 
-    public bool PickStudAnimStart;
+    public bool pickStudAnimStart;
+    public bool pickVerticalStudAnimStart;
 
 
     public float rotationSpeed = 50f;
@@ -171,9 +172,13 @@ public class MyRobotController_6 : MonoBehaviour
             catchTarget();
         }
 
-        if(PickStudAnimStart)
+        if(pickStudAnimStart)
         {
             PickStudAnim();
+        }
+        else if(pickVerticalStudAnimStart)
+        {
+            PickStudAnimVertical();
         }
        
     }
@@ -194,6 +199,9 @@ public class MyRobotController_6 : MonoBehaviour
             closePinzas = !closePinzas;
             picked_Target = true;
         }
+
+        if (Input.GetKey(KeyCode.Alpha1)) pickStudAnimStart = true;
+        if (Input.GetKey(KeyCode.Alpha2)) pickVerticalStudAnimStart = true;
 
         // Aplicar los límites
         //angle0_y = Mathf.Clamp(angle0_y, minAngle_Q, MaxAngle_A);
@@ -433,5 +441,180 @@ public class MyRobotController_6 : MonoBehaviour
         CalculateFK();
     }
 
+    void PickStudAnimVertical()
+    {
 
+        switch (phaseRotate)
+        {
+            case phase.R1:
+
+                //Q
+                if (angle0_y <= 130.104)
+                {
+                    angle0_y += rotationSpeed * Time.deltaTime;
+                }
+                else
+                    phaseRotate = phase.R2;
+
+                break;
+
+            case phase.R2:
+
+                if (angle3_z <= 115.113)
+                {
+                    angle3_z += rotationSpeed * Time.deltaTime;
+                }
+                else
+                    phaseRotate = phase.R3;
+
+                if (angle4_z <= -40.718)
+                {
+                    angle4_z -= rotationSpeed * Time.deltaTime;
+                }
+
+                break;
+            case phase.R3:
+
+                if (angle3_z >= 90)
+                {
+                    angle3_z -= rotationSpeed * Time.deltaTime;
+                }
+                else
+                    phaseRotate = phase.R4;
+
+                if (angle4_z <= -40.718)
+                {
+                    angle4_z -= rotationSpeed * Time.deltaTime;
+                }
+
+                break;
+            case phase.R4:
+
+                if (angle5_z >= 34.906)
+                {
+                    angle5_z -= rotationSpeed * Time.deltaTime;
+                }
+                else
+                {
+                    
+                    phaseRotate = phase.R5;
+                }
+
+                break;
+            case phase.R5:
+
+                if (angle3_z >= 65)
+                {
+                    angle3_z -= rotationSpeed * Time.deltaTime;
+                }
+                else 
+                    phaseRotate = phase.R6;
+
+                break;
+            case phase.R6:
+                //E
+                if (angle4_z <= -120)
+                {
+                    angle4_z += rotationSpeed * Time.deltaTime;
+                }
+                else
+                    phaseRotate = phase.R7;
+
+                //S
+                if(angle3_z >= 45)
+                {
+                    angle3_z -= rotationSpeed * Time.deltaTime;
+                }
+                
+
+                break;
+            case phase.R7:
+
+                //F
+                if(angle5_z >= 5)
+                {
+                    angle5_z -= rotationSpeed * Time.deltaTime;
+                }
+                else
+                {
+                    closePinzas = !closePinzas;
+                    picked_Target = true;
+                    phaseRotate = phase.R8;
+                }
+
+
+                break;
+            case phase.R8:
+
+                //A
+                if (angle0_y >= -31.004)
+                {
+                    angle0_y -= rotationSpeed * Time.deltaTime;
+                }
+                else
+                    phaseRotate = phase.R9;
+
+                //D
+                if (angle4_z <= -40)
+                {
+                    angle4_z += rotationSpeed * Time.deltaTime;
+                }
+
+                break;
+            case phase.R9:
+
+                //W
+                if (angle3_z <= 85)
+                {
+                    angle3_z += rotationSpeed * Time.deltaTime;
+                }
+               
+                //D
+                if (angle4_z >= -150)
+                {
+                    angle4_z -= rotationSpeed * Time.deltaTime;
+                }
+                else
+                    phaseRotate = phase.R10;
+
+                break;
+
+            case phase.R10:
+
+                //S
+                if (angle3_z >= 20)
+                {
+                    angle3_z -= rotationSpeed * Time.deltaTime;
+                }
+                
+
+                //E
+                if (angle4_z <= -45)
+                {
+                    angle4_z += rotationSpeed * Time.deltaTime;
+                }
+                else
+                {
+                    closePinzas = !closePinzas;
+                    picked_Target = false;
+                    phaseRotate = phase.R11;
+                }
+
+                //F
+                if (angle5_z >= -50)
+                {
+                    angle5_z -= rotationSpeed * Time.deltaTime;
+                }
+                
+                break;
+
+            case phase.R11:
+
+                
+
+                break;
+        }
+
+        CalculateFK();
+    }
 }
