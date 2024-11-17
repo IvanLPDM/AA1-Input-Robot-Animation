@@ -5,6 +5,11 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using static UnityEngine.GraphicsBuffer;
 
+enum phase
+{
+    R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12
+}
+
 
 public class MyRobotController_6 : MonoBehaviour
 {
@@ -25,6 +30,8 @@ public class MyRobotController_6 : MonoBehaviour
 
     public Transform Stud_target;
     public Transform Workbench_destination;
+
+    private Rigidbody rb;
 
     public float minAngle;
     public float maxAngle;
@@ -75,11 +82,15 @@ public class MyRobotController_6 : MonoBehaviour
     public float MinAngle_R;
     public float MaxAngle_F;
 
+    public bool PickStudAnimStart;
+
 
     public float rotationSpeed = 50f;
 
     private bool picked_Target = false;
     private bool closePinzas = false;
+
+    private phase phaseRotate = phase.R1;
 
 
     // Start is called before the first frame update
@@ -105,6 +116,8 @@ public class MyRobotController_6 : MonoBehaviour
 
         pinzaClose1.gameObject.SetActive(false);
         pinzaClose2.gameObject.SetActive(false);
+
+        rb = Stud_target.GetComponent<Rigidbody>();
     }
 
     void IniciarAngulos()
@@ -148,7 +161,7 @@ public class MyRobotController_6 : MonoBehaviour
         InputHope();
         UpdateVisualLinks();
 
-        if(closePinzas)
+        if(!closePinzas)
         {
             dropTarget();
             
@@ -156,6 +169,11 @@ public class MyRobotController_6 : MonoBehaviour
         else
         {
             catchTarget();
+        }
+
+        if(PickStudAnimStart)
+        {
+            PickStudAnim();
         }
        
     }
@@ -277,7 +295,15 @@ public class MyRobotController_6 : MonoBehaviour
         pinzaClose1.gameObject.SetActive(true);
         pinzaClose2.gameObject.SetActive(true);
 
-        //Stud_target.position = endFactor.position;
+        float distancia = Vector3.Distance(Stud_target.position, endFactor.position);
+
+        if(distancia <= 1.0f)
+        {
+            rb.isKinematic = true; 
+            rb.detectCollisions = false;
+            Stud_target.SetParent(endFactor);
+        }
+        //
     }
 
     void dropTarget()
@@ -287,5 +313,123 @@ public class MyRobotController_6 : MonoBehaviour
 
         pinzaClose1.gameObject.SetActive(false);
         pinzaClose2.gameObject.SetActive(false);
+
+        rb.isKinematic = false;
+        rb.detectCollisions = true;
+        Stud_target.SetParent(null);
+    }
+
+    void PickStudAnim()
+    {
+        switch(phaseRotate)
+        {
+            case phase.R1:
+
+                if (angle0_y <= 130.104)
+                {
+                    angle0_y += rotationSpeed * Time.deltaTime;
+                }
+                else
+                    phaseRotate = phase.R2;
+
+                    break;
+
+            case phase.R2:
+
+                if (angle3_z <= 115.113)
+                {
+                    angle3_z += rotationSpeed * Time.deltaTime;
+                }
+                else
+                    phaseRotate = phase.R3;
+
+                if(angle4_z <= -40.718)
+                {
+                    angle4_z -= rotationSpeed * Time.deltaTime;
+                }
+
+                break;
+            case phase.R3:
+
+                if (angle3_z >= 90)
+                {
+                    angle3_z -= rotationSpeed * Time.deltaTime;
+                }
+                else
+                    phaseRotate = phase.R4;
+
+                if (angle4_z <= -40.718)
+                {
+                    angle4_z -= rotationSpeed * Time.deltaTime;
+                }
+
+                break;
+            case phase.R4:
+
+                if (angle5_z >= 34.906)
+                {
+                    angle5_z -= rotationSpeed * Time.deltaTime;
+                }
+                else
+                {
+                    closePinzas = !closePinzas;
+                    picked_Target = true;
+                    phaseRotate = phase.R5;
+                }
+
+                break;
+            case phase.R5:
+
+                if (angle0_y >= -31.004)
+                {
+                    angle0_y -= rotationSpeed * Time.deltaTime;
+                }
+                else
+                    phaseRotate = phase.R6;
+
+                if (angle4_z <= -110)
+                {
+                    angle4_z += rotationSpeed * Time.deltaTime;
+                }
+
+                break;
+            case phase.R6:
+
+                if (angle3_z >= 50)
+                {
+                    angle3_z -= rotationSpeed * Time.deltaTime;
+                }
+                else
+                phaseRotate = phase.R7;
+
+                if (angle4_z <= -70)
+                {
+                    angle4_z += rotationSpeed * Time.deltaTime;
+                }
+
+                break;
+            case phase.R7:
+
+                if (angle5_z >= -15)
+                {
+                    angle5_z -= rotationSpeed * Time.deltaTime;
+                }
+                else
+                {
+                    closePinzas = !closePinzas;
+                    picked_Target = true;
+                    phaseRotate = phase.R8;
+                }
+
+                break;
+            case phase.R8:
+
+                break;
+            case phase.R9:
+
+                break;
+        }
+
+        CalculateFK();
     }
 }
