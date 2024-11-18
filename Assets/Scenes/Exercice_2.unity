@@ -1075,7 +1075,7 @@ MonoBehaviour:
   MaxAngle_F: 80
   pickStudAnimStart: 0
   pickVerticalStudAnimStart: 0
-  rotationSpeed: 100
+  rotationSpeed: 50
 --- !u!1 &121630812
 GameObject:
   m_ObjectHideFlags: 0
